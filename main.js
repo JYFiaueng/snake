@@ -20,6 +20,7 @@ var directionMove = true;
 var directionChange = [];
 var score = 0;
 var keyStart = true;
+var documentWidth = window.screen.availWidth;
 
 function init(){
 	initArr();
@@ -49,7 +50,7 @@ function move(){
 				$score.innerHTML = score;
 			}else{
 				game_arr[snake_end.x][snake_end.y] = 0;
-				if(directionChange.length != 0){
+				if(directionChange.length !== 0){
 					if(directionChange[0].x == snake_end.x && directionChange[0].y == snake_end.y){
 						snake_end.d = directionChange[0].d;
 						directionChange.splice(0, 1);
@@ -238,10 +239,70 @@ document.addEventListener('keydown', function(event){
 	console.log(direction);
 });
 
+$game.addEventListener('touchstart', function(event){
+	startx = event.touches[0].pageX;
+	starty = event.touches[0].pageY;
+});
+$game.addEventListener('touchend', function(event){
+	endx = event.changedTouches[0].pageX;
+	endy = event.changedTouches[0].pageY;
+	var deltx = endx - startx;
+	var delty = endy - starty;
+	if(keyStart){
+		move();
+		keyStart = false;
+	}
+	if(Math.abs(deltx)<0.1*documentWidth && Math.abs(delty)<0.1*documentWidth){
+		return;
+	}
+	if(Math.abs(deltx) >= Math.abs(delty)){
+		if(deltx > 0){
+			if(direction !== 'l'){
+				direction = 'r';
+				directionChange.push({
+					x:snake_head.x,
+					y:snake_head.y,
+					d:direction
+				});
+			}
+		}else{
+			if(direction !== 'r'){
+				direction = 'l';
+				directionChange.push({
+					x:snake_head.x,
+					y:snake_head.y,
+					d:direction
+				});
+			}
+		}
+	}else{
+		if(delty > 0){
+			if(direction !== 't'){
+				direction = 'b';
+				directionChange.push({
+					x:snake_head.x,
+					y:snake_head.y,
+					d:direction
+				});
+			}
+		}else{
+			if(direction !== 'b'){
+				direction = 't';
+				directionChange.push({
+					x:snake_head.x,
+					y:snake_head.y,
+					d:direction
+				});
+			}
+		}
+	}
+	console.log(direction);
+});
+
 $start.addEventListener('click', function(){
-	snake_head = {}
-	snake_end = {}
-	food_pos = {}
+	snake_head = {};
+	snake_end = {};
+	food_pos = {};
 	id = -1;
 	gameover = false;
 	directionMove = true;

@@ -36,26 +36,33 @@ function move(){
 			$mark.style.display = 'block';
 			return;
 		}
+		// 更改蛇头位置
 		switch(direction){
 			case 'l':moveLeft();break;
 			case 't':moveTop();break;
 			case 'r':moveRight();break;
 			case 'b':moveBottom();break;
 		}
+		// 蛇头碰到自己否？
 		if(game_arr[snake_head.x][snake_head.y] !== 1){
+			// 没碰到自己就可以占用下一个位置
 			game_arr[snake_head.x][snake_head.y] = 1;
+			// 下一个位置是否有食物？
 			if(snake_head.x === food_pos.x && snake_head.y === food_pos.y){
 				createFoot();
 				score++;
 				$score.innerHTML = score;
 			}else{
+				// 蛇尾前进
 				game_arr[snake_end.x][snake_end.y] = 0;
 				if(directionChange.length !== 0){
+					// 蛇尾到达最近拐弯处，把弯去掉并重置蛇尾的方向
 					if(directionChange[0].x == snake_end.x && directionChange[0].y == snake_end.y){
 						snake_end.d = directionChange[0].d;
 						directionChange.splice(0, 1);
 					}
 				}
+				// 蛇尾沿当前方向移动一步
 				switch(snake_end.d){
 					case 'l':snake_end.x -= 1;break;
 					case 'r':snake_end.x += 1;break;
@@ -102,11 +109,13 @@ function moveBottom(){
 }
 
 function snakePos(){
+	// 随机蛇头位置
 	var x = parseInt(Math.random()*(game_arrSild-7)+3);
 	var y = parseInt(Math.random()*(game_arrSild-7)+3);
 	snake_head.x = x;
 	snake_head.y = y;
 	game_arr[x][y] = 1;
+	// 随机一个移动方向并设定蛇尾位置和方向
 	switch(parseInt(Math.random()*3)){
 		case 0:x -= 1;direction = 'r';break;
 		case 1:x += 1;direction = 'l';break;
@@ -118,6 +127,7 @@ function snakePos(){
 	snake_end.d = direction;
 	game_arr[x][y] = 1;
 }
+// 初始化数组
 function initArr(){
 	for(var i = 0; i < game_arrSild; i++){
 		game_arr[i] = [];
@@ -126,6 +136,7 @@ function initArr(){
 		}
 	}
 }
+// 画蛇
 function drawSnake(){
 	var html = '';
 	for(var i = 0; i < game_arrSild; i++){
@@ -143,10 +154,11 @@ function drawSnake(){
 	html += food_str;
 	$game.innerHTML = html;
 }
-
+// 创建一个食物
 function createFoot(){
 	var x = parseInt(Math.random()*game_arrSild);
 	var y = parseInt(Math.random()*game_arrSild);
+	// 创建的食物不能在蛇已经占用的位置
 	while(game_arr[x][y] === 1){
 		x = parseInt(Math.random()*game_arrSild);
 		y = parseInt(Math.random()*game_arrSild);
@@ -156,13 +168,14 @@ function createFoot(){
 	var p = getPos(x, y);
 	food_str = '<div style="background:url(apple.png);background-size:cover;position:absolute;left:'+p.x+'px;top:'+p.y+'px;width:'+snake_WH+'px;height:'+snake_WH+'px;"></div>';
 }
+// 获取绝对位置
 function getPos(x, y){
 	return {
 		x:x*snake_WH,
 		y:y*snake_WH,
 	};
 }
-
+// 屏幕适配
 function ScreenAdaptation(){
 	var w = window.screen.availWidth;
 	var h = window.screen.availHeight;
@@ -180,6 +193,7 @@ function $(str){
 function $all(str){
 	return document.querySelectorAll(str);
 }
+// 键盘事件，根据事件更改数据，压入拐角
 document.addEventListener('keydown', function(event){
 	if(directionMove){
 		directionMove = false;
